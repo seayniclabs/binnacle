@@ -6,7 +6,9 @@ import Foundation
 actor EventStoreManager {
     static let shared = EventStoreManager()
 
-    private let store = EKEventStore()
+    // EKEventStore is not Sendable, but all access is serialized through this actor.
+    // nonisolated(unsafe) suppresses the false-positive concurrency warning.
+    nonisolated(unsafe) private let store = EKEventStore()
 
     private var eventsAuthorized = false
     private var remindersAuthorized = false
