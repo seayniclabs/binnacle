@@ -1,0 +1,40 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: macos-14  # Apple Silicon runner
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: swift build
+
+      - name: Run unit tests
+        run: swift test
+
+      - name: Leakage scan
+        run: |
+          ! grep -ri "charlieseay\|seaynicroute\|192\.168\.0" Sources/ || (echo "LEAK DETECTED" && exit 1)
+
+      - name: Shell injection audit
+        run: |
+          # Only shortcuts_run should use Process — flag anything else
+          SHELL_CALLS=$(grep -rn "Process()\|NSTask\|CommandLine" Sources/ | grep -v "shortcuts" | grep -v "test" || true)
+          if [ -n "$SHELL_CALLS" ]; then
+            echo "UNEXPECTED PROCESS CALLS:"
+            echo "$SHELL_CALLS"
+            exit 1
+          fi
+
+      - name: Notarization check
+        if: github.ref == 'refs/heads/main'
+        run: |
+          swift build -c release
+          codesign --verify --deep .build/release/binnacle 2>&1 || echo "Not signed (expected in CI)"
