@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: macos-14  # Apple Silicon runner
+    runs-on: macos-15  # Swift 6.0+ required
 
     steps:
       - uses: actions/checkout@v4
