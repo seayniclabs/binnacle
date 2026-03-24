@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import Binnacle
+@testable import BinnacleCore
 
 @Suite("Shortcut Name Validation")
 struct ShortcutNameValidationTests {

@@ -1,28 +1,13 @@
 import MCP
+import BinnacleCore
 
-/// Health check tool definitions and handler
-enum PingTool {
-    static let tool = Tool(
-        name: "ping",
-        description: "Health check — returns server version and status",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([:])
-        ]),
-        annotations: .init(readOnlyHint: true, openWorldHint: false)
-    )
+/// Health check handler
+enum PingHandler {
+    static let tool = BinnacleCore.PingTool.tool
 
     static func handle(arguments: [String: Value]?) async -> CallTool.Result {
         return .init(
-            content: [
-                .text(
-                    text: """
-                    {"status":"ok","server":"binnacle","version":"0.1.0"}
-                    """,
-                    annotations: nil,
-                    _meta: nil
-                )
-            ],
+            content: [.text(text: Binnacle.pingResponse, annotations: nil, _meta: nil)],
             isError: false
         )
     }

@@ -1,5 +1,6 @@
 import EventKit
 import Foundation
+import BinnacleCore
 
 /// Shared EventKit access manager — all EKEventStore operations stay inside this actor.
 /// Returns JSON strings to avoid Sendable issues with [String: Any] and EK types.
@@ -264,20 +265,3 @@ actor EventStoreManager {
     }
 }
 
-// MARK: - Binnacle Errors
-
-enum BinnacleError: Error, CustomStringConvertible {
-    case permissionDenied(String)
-    case notFound(String)
-    case invalidInput(String)
-    case shortcutFailed(String)
-
-    var description: String {
-        switch self {
-        case .permissionDenied(let msg): return "Permission denied: \(msg)"
-        case .notFound(let msg): return "Not found: \(msg)"
-        case .invalidInput(let msg): return "Invalid input: \(msg)"
-        case .shortcutFailed(let msg): return "Shortcut failed: \(msg)"
-        }
-    }
-}

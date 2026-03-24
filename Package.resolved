@@ -1,5 +1,5 @@
 {
-  "originHash" : "b5e80013565eb7a2d95103a149a6c9098cbed424a6aa591b6272af0ccf412dce",
+  "originHash" : "acfcda7f3465e0c4cadfb2e4d20c55ea6067d093b02c529759d33fe4f15df2d4",
   "pins" : [
     {
       "identity" : "eventsource",
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/modelcontextprotocol/swift-sdk.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "973b46b8f761eba626dfbc399693871128ec60f1"
+        "revision" : "6132fd4b5b4217ce4717c4775e4607f5c3120129",
+        "version" : "0.12.0"
       }
     },
     {

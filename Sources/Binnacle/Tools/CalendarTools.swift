@@ -1,112 +1,11 @@
 import Foundation
 import MCP
+import BinnacleCore
 
-/// Calendar tools — delegates all EventKit ops to EventStoreManager actor
+/// Calendar tools -- delegates all EventKit ops to EventStoreManager actor
 enum CalendarTools {
 
-    // MARK: - Tool Definitions
-
-    static let calendarList = Tool(
-        name: "calendar_list",
-        description: "List all calendars available on this Mac",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([:])
-        ]),
-        annotations: .init(readOnlyHint: true, openWorldHint: false)
-    )
-
-    static let calendarToday = Tool(
-        name: "calendar_today",
-        description: "List today's calendar events",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([:])
-        ]),
-        annotations: .init(readOnlyHint: true, openWorldHint: false)
-    )
-
-    static let calendarRange = Tool(
-        name: "calendar_range",
-        description: "List calendar events in a date range",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([
-                "start": .object(["type": "string", "description": "Start date (ISO8601)"]),
-                "end": .object(["type": "string", "description": "End date (ISO8601)"])
-            ]),
-            "required": .array(["start", "end"])
-        ]),
-        annotations: .init(readOnlyHint: true, openWorldHint: false)
-    )
-
-    static let calendarCreate = Tool(
-        name: "calendar_create",
-        description: "Create a calendar event",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([
-                "title": .object(["type": "string", "description": "Event title"]),
-                "start": .object(["type": "string", "description": "Start date (ISO8601)"]),
-                "end": .object(["type": "string", "description": "End date (ISO8601)"]),
-                "calendar_id": .object(["type": "string", "description": "Calendar identifier (optional)"]),
-                "location": .object(["type": "string", "description": "Event location (optional)"]),
-                "notes": .object(["type": "string", "description": "Event notes (optional)"])
-            ]),
-            "required": .array(["title", "start", "end"])
-        ]),
-        annotations: .init(
-            readOnlyHint: false,
-            destructiveHint: false,
-            idempotentHint: false,
-            openWorldHint: false
-        )
-    )
-
-    static let calendarUpdate = Tool(
-        name: "calendar_update",
-        description: "Update an existing calendar event",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([
-                "event_id": .object(["type": "string", "description": "Event identifier"]),
-                "title": .object(["type": "string", "description": "New title (optional)"]),
-                "start": .object(["type": "string", "description": "New start date ISO8601 (optional)"]),
-                "end": .object(["type": "string", "description": "New end date ISO8601 (optional)"]),
-                "location": .object(["type": "string", "description": "New location (optional)"]),
-                "notes": .object(["type": "string", "description": "New notes (optional)"])
-            ]),
-            "required": .array(["event_id"])
-        ]),
-        annotations: .init(
-            readOnlyHint: false,
-            destructiveHint: false,
-            idempotentHint: true,
-            openWorldHint: false
-        )
-    )
-
-    static let calendarDelete = Tool(
-        name: "calendar_delete",
-        description: "Delete a calendar event",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([
-                "event_id": .object(["type": "string", "description": "Event identifier"])
-            ]),
-            "required": .array(["event_id"])
-        ]),
-        annotations: .init(
-            readOnlyHint: false,
-            destructiveHint: true,
-            idempotentHint: true,
-            openWorldHint: false
-        )
-    )
-
-    static var allTools: [Tool] {
-        [calendarList, calendarToday, calendarRange, calendarCreate, calendarUpdate, calendarDelete]
-    }
+    static var allTools: [Tool] { CalendarToolDefs.allTools }
 
     // MARK: - Handlers
 

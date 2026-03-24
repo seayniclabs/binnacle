@@ -1,66 +1,11 @@
 import Foundation
 import MCP
+import BinnacleCore
 
-/// Reminder tools — delegates all EventKit ops to EventStoreManager actor
+/// Reminder tools -- delegates all EventKit ops to EventStoreManager actor
 enum ReminderTools {
 
-    // MARK: - Tool Definitions
-
-    static let remindersList = Tool(
-        name: "reminders_list",
-        description: "List reminders, optionally filtered by list name",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([
-                "list_name": .object(["type": "string", "description": "Filter by reminder list name (optional)"]),
-                "show_completed": .object(["type": "boolean", "description": "Include completed reminders (default: false)"])
-            ])
-        ]),
-        annotations: .init(readOnlyHint: true, openWorldHint: false)
-    )
-
-    static let remindersCreate = Tool(
-        name: "reminders_create",
-        description: "Create a new reminder",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([
-                "title": .object(["type": "string", "description": "Reminder title"]),
-                "due_date": .object(["type": "string", "description": "Due date ISO8601 (optional)"]),
-                "priority": .object(["type": "integer", "description": "Priority 0-9, 0=none (optional)"]),
-                "list_name": .object(["type": "string", "description": "Reminder list name (optional)"])
-            ]),
-            "required": .array(["title"])
-        ]),
-        annotations: .init(
-            readOnlyHint: false,
-            destructiveHint: false,
-            idempotentHint: false,
-            openWorldHint: false
-        )
-    )
-
-    static let remindersComplete = Tool(
-        name: "reminders_complete",
-        description: "Mark a reminder as complete",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([
-                "reminder_id": .object(["type": "string", "description": "Reminder identifier"])
-            ]),
-            "required": .array(["reminder_id"])
-        ]),
-        annotations: .init(
-            readOnlyHint: false,
-            destructiveHint: false,
-            idempotentHint: true,
-            openWorldHint: false
-        )
-    )
-
-    static var allTools: [Tool] {
-        [remindersList, remindersCreate, remindersComplete]
-    }
+    static var allTools: [Tool] { ReminderToolDefs.allTools }
 
     // MARK: - Handlers
 

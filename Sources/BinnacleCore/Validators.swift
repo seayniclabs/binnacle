@@ -2,12 +2,12 @@ import Foundation
 
 // MARK: - Validation Errors
 
-enum ValidationError: Error, CustomStringConvertible {
+public enum ValidationError: Error, CustomStringConvertible {
     case invalidShortcutName(String)
     case invalidDateFormat(String)
     case invalidEventId(String)
 
-    var description: String {
+    public var description: String {
         switch self {
         case .invalidShortcutName(let reason):
             return "Invalid shortcut name: \(reason)"
@@ -21,14 +21,14 @@ enum ValidationError: Error, CustomStringConvertible {
 
 // MARK: - Validators
 
-enum Validators {
+public enum Validators {
     /// Shell metacharacters that must not appear in shortcut names
     private static let forbiddenCharacters: Set<Character> = [
         ";", "&", "|", "`", "$", "\\", "(", ")", "{", "}", "<", ">", "\"", "'", "\n", "\r"
     ]
 
     /// Validate a shortcut name contains no shell metacharacters
-    static func validateShortcutName(_ name: String) throws {
+    public static func validateShortcutName(_ name: String) throws {
         guard !name.isEmpty else {
             throw ValidationError.invalidShortcutName("name cannot be empty")
         }
@@ -43,7 +43,7 @@ enum Validators {
     }
 
     /// Parse an ISO8601 date string into a Date
-    static func parseISO8601(_ string: String) throws -> Date {
+    public static func parseISO8601(_ string: String) throws -> Date {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
 
@@ -68,14 +68,14 @@ enum Validators {
     }
 
     /// Format a Date as ISO8601 string
-    static func formatISO8601(_ date: Date) -> String {
+    public static func formatISO8601(_ date: Date) -> String {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
         return formatter.string(from: date)
     }
 
     /// Validate an event/reminder identifier is non-empty
-    static func validateEventId(_ id: String) throws {
+    public static func validateEventId(_ id: String) throws {
         guard !id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw ValidationError.invalidEventId("ID cannot be empty")
         }

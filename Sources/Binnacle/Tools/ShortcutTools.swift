@@ -1,53 +1,11 @@
 import Foundation
 import MCP
+import BinnacleCore
 
-/// Shortcuts integration tools — uses Process with argument arrays (never string interpolation)
+/// Shortcuts integration tools -- uses Process with argument arrays (never string interpolation)
 enum ShortcutTools {
 
-    // MARK: - Tool Definitions
-
-    static let shortcutsList = Tool(
-        name: "shortcuts_list",
-        description: "List all Shortcuts available on this Mac",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([:])
-        ]),
-        annotations: .init(readOnlyHint: true, openWorldHint: false)
-    )
-
-    static let shortcutsRun = Tool(
-        name: "shortcuts_run",
-        description: "Run a Shortcut by name with optional text input",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([
-                "name": .object(["type": "string", "description": "Shortcut name"]),
-                "input": .object(["type": "string", "description": "Text input to pass to the Shortcut (optional)"])
-            ]),
-            "required": .array(["name"])
-        ]),
-        annotations: .init(
-            readOnlyHint: false,
-            destructiveHint: false,
-            idempotentHint: false,
-            openWorldHint: true
-        )
-    )
-
-    static let shortcutsFolders = Tool(
-        name: "shortcuts_folders",
-        description: "List Shortcut folders",
-        inputSchema: .object([
-            "type": "object",
-            "properties": .object([:])
-        ]),
-        annotations: .init(readOnlyHint: true, openWorldHint: false)
-    )
-
-    static var allTools: [Tool] {
-        [shortcutsList, shortcutsRun, shortcutsFolders]
-    }
+    static var allTools: [Tool] { ShortcutToolDefs.allTools }
 
     // MARK: - Handlers
 
@@ -72,10 +30,7 @@ enum ShortcutTools {
 
     private static func handleList() async throws -> CallTool.Result {
         let output = try await runShortcutsCommand(arguments: ["list"])
-        return .init(
-            content: [.text(text: output, annotations: nil, _meta: nil)],
-            isError: false
-        )
+        return textResult(output)
     }
 
     // MARK: - Run
@@ -96,10 +51,7 @@ enum ShortcutTools {
         }
 
         let output = try await runShortcutsCommand(arguments: args, stdinData: input)
-        return .init(
-            content: [.text(text: output.isEmpty ? "Shortcut completed successfully" : output, annotations: nil, _meta: nil)],
-            isError: false
-        )
+        return textResult(output.isEmpty ? "Shortcut completed successfully" : output)
     }
 
     // MARK: - Folders
@@ -108,17 +60,11 @@ enum ShortcutTools {
         // Try --folders flag first; fall back to parsing list output
         do {
             let output = try await runShortcutsCommand(arguments: ["list", "--folders"])
-            return .init(
-                content: [.text(text: output, annotations: nil, _meta: nil)],
-                isError: false
-            )
+            return textResult(output)
         } catch {
             // Fallback: list all shortcuts and extract unique folder info
             let output = try await runShortcutsCommand(arguments: ["list", "--show-identifiers"])
-            return .init(
-                content: [.text(text: output, annotations: nil, _meta: nil)],
-                isError: false
-            )
+            return textResult(output)
         }
     }
 
@@ -130,7 +76,7 @@ enum ShortcutTools {
         stdinData: String? = nil
     ) async throws -> String {
         try await withCheckedThrowingContinuation { continuation in
-            let process = Process() // shortcuts execution
+            let process = Process()
             process.executableURL = URL(fileURLWithPath: "/usr/bin/shortcuts")
             process.arguments = arguments
 
@@ -169,6 +115,15 @@ enum ShortcutTools {
                 continuation.resume(throwing: BinnacleError.shortcutFailed("Failed to launch shortcuts: \(error)"))
             }
         }
+    }
+
+    // MARK: - Helpers
+
+    private static func textResult(_ text: String) -> CallTool.Result {
+        .init(
+            content: [.text(text: text, annotations: nil, _meta: nil)],
+            isError: false
+        )
     }
 
     private static func errorResult(_ message: String) -> CallTool.Result {
