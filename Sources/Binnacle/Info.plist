@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.seayniclabs.binnacle</string>
+    <key>CFBundleName</key>
+    <string>Binnacle</string>
+    <key>CFBundleVersion</key>
+    <string>0.1.0</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.1.0</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Binnacle needs calendar access to read and manage your events.</string>
+    <key>NSRemindersUsageDescription</key>
+    <string>Binnacle needs reminders access to read and manage your reminders.</string>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>Binnacle needs full calendar access to create, update, and delete events.</string>
+    <key>NSRemindersFullAccessUsageDescription</key>
+    <string>Binnacle needs full reminders access to create and complete reminders.</string>
+</dict>
+</plist>
