@@ -11,6 +11,9 @@ public enum Binnacle {
         + CalendarToolDefs.allTools
         + ReminderToolDefs.allTools
         + ShortcutToolDefs.allTools
+        + SystemInfoToolDefs.allTools
+        + NotificationToolDefs.allTools
+        + ClipboardToolDefs.allTools
 
     /// Expected tool names in registration order
     public static let toolNames: [String] = tools.map(\.name)
@@ -250,5 +253,110 @@ public enum ShortcutToolDefs {
 
     public static var allTools: [Tool] {
         [shortcutsList, shortcutsRun, shortcutsFolders]
+    }
+}
+
+// MARK: - System Info Tool Definitions
+
+public enum SystemInfoToolDefs {
+
+    public static let getInfo = Tool(
+        name: "system_get_info",
+        description: "Get macOS system info: CPU usage, memory, disk space, battery level/charging, uptime",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([:])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static let getDisplayInfo = Tool(
+        name: "system_get_display_info",
+        description: "Get display info: resolution, connected displays",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([:])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static let getVolume = Tool(
+        name: "system_get_volume",
+        description: "Get current audio output volume level and mute state",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([:])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static var allTools: [Tool] {
+        [getInfo, getDisplayInfo, getVolume]
+    }
+}
+
+// MARK: - Notification Tool Definitions
+
+public enum NotificationToolDefs {
+
+    public static let send = Tool(
+        name: "notification_send",
+        description: "Send a macOS notification with title, body, and optional subtitle",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([
+                "title": .object(["type": "string", "description": "Notification title"]),
+                "body": .object(["type": "string", "description": "Notification body text"]),
+                "subtitle": .object(["type": "string", "description": "Notification subtitle (optional)"])
+            ]),
+            "required": .array(["title", "body"])
+        ]),
+        annotations: .init(
+            readOnlyHint: false,
+            destructiveHint: false,
+            idempotentHint: false,
+            openWorldHint: false
+        )
+    )
+
+    public static var allTools: [Tool] {
+        [send]
+    }
+}
+
+// MARK: - Clipboard Tool Definitions
+
+public enum ClipboardToolDefs {
+
+    public static let read = Tool(
+        name: "clipboard_read",
+        description: "Read the current text content from the macOS clipboard",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([:])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static let write = Tool(
+        name: "clipboard_write",
+        description: "Write text to the macOS clipboard",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([
+                "text": .object(["type": "string", "description": "Text to write to clipboard"])
+            ]),
+            "required": .array(["text"])
+        ]),
+        annotations: .init(
+            readOnlyHint: false,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false
+        )
+    )
+
+    public static var allTools: [Tool] {
+        [read, write]
     }
 }

@@ -6,23 +6,26 @@ import MCP
 @Suite("Tool Registration")
 struct ToolRegistrationTests {
 
-    @Test("All Phase 1 tools are registered")
+    @Test("All tools are registered")
     func allToolsRegistered() {
         let expectedNames: Set<String> = [
             "ping",
             "calendar_list", "calendar_today", "calendar_range",
             "calendar_create", "calendar_update", "calendar_delete",
             "reminders_list", "reminders_create", "reminders_complete",
-            "shortcuts_list", "shortcuts_run", "shortcuts_folders"
+            "shortcuts_list", "shortcuts_run", "shortcuts_folders",
+            "system_get_info", "system_get_display_info", "system_get_volume",
+            "notification_send",
+            "clipboard_read", "clipboard_write"
         ]
 
         let actualNames = Set(Binnacle.toolNames)
         #expect(actualNames == expectedNames)
     }
 
-    @Test("Tool count matches Phase 1 spec (13 tools)")
+    @Test("Tool count matches spec (19 tools)")
     func toolCountMatches() {
-        #expect(Binnacle.tools.count == 13)
+        #expect(Binnacle.tools.count == 19)
     }
 
     @Test("Ping response contains version")

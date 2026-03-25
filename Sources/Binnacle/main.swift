@@ -86,7 +86,7 @@ func runSetup() async {
 // MARK: - Tool Registry
 
 /// All tools registered in the server
-let allTools: [Tool] = [PingHandler.tool] + CalendarTools.allTools + ReminderTools.allTools + ShortcutTools.allTools
+let allTools: [Tool] = [PingHandler.tool] + CalendarTools.allTools + ReminderTools.allTools + ShortcutTools.allTools + SystemInfoTools.allTools + NotificationTools.allTools + ClipboardTools.allTools
 
 /// Route a tool call to the appropriate handler
 func handleToolCall(name: String, arguments: [String: Value]?) async -> CallTool.Result {
@@ -99,6 +99,12 @@ func handleToolCall(name: String, arguments: [String: Value]?) async -> CallTool
         return await ReminderTools.handle(name: n, arguments: arguments)
     case let n where n.hasPrefix("shortcuts_"):
         return await ShortcutTools.handle(name: n, arguments: arguments)
+    case let n where n.hasPrefix("system_"):
+        return await SystemInfoTools.handle(name: n, arguments: arguments)
+    case let n where n.hasPrefix("notification_"):
+        return await NotificationTools.handle(name: n, arguments: arguments)
+    case let n where n.hasPrefix("clipboard_"):
+        return await ClipboardTools.handle(name: n, arguments: arguments)
     default:
         return .init(
             content: [.text(text: "Unknown tool: \(name)", annotations: nil, _meta: nil)],
