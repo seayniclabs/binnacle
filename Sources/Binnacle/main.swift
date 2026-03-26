@@ -86,7 +86,7 @@ func runSetup() async {
 // MARK: - Tool Registry
 
 /// All tools registered in the server
-let allTools: [Tool] = [PingHandler.tool] + CalendarTools.allTools + ReminderTools.allTools + ShortcutTools.allTools + SystemInfoTools.allTools + NotificationTools.allTools + ClipboardTools.allTools
+let allTools: [Tool] = [PingHandler.tool] + CalendarTools.allTools + ReminderTools.allTools + ShortcutTools.allTools + SystemInfoTools.allTools + NotificationTools.allTools + ClipboardTools.allTools + SpotlightTools.allTools + FinderTools.allTools + AppTools.allTools + DisplayTools.allTools + AppearanceTools.allTools + NetworkTools.allTools + PowerTools.allTools + StorageTools.allTools
 
 /// Route a tool call to the appropriate handler
 func handleToolCall(name: String, arguments: [String: Value]?) async -> CallTool.Result {
@@ -105,6 +105,24 @@ func handleToolCall(name: String, arguments: [String: Value]?) async -> CallTool
         return await NotificationTools.handle(name: n, arguments: arguments)
     case let n where n.hasPrefix("clipboard_"):
         return await ClipboardTools.handle(name: n, arguments: arguments)
+    case let n where n.hasPrefix("spotlight_"):
+        return await SpotlightTools.handle(name: n, arguments: arguments)
+    case let n where n.hasPrefix("finder_"):
+        return await FinderTools.handle(name: n, arguments: arguments)
+    case "get_downloads":
+        return await FinderTools.handle(name: name, arguments: arguments)
+    case "open_app", "get_running_apps":
+        return await AppTools.handle(name: name, arguments: arguments)
+    case "get_display_settings":
+        return await DisplayTools.handle(name: name, arguments: arguments)
+    case "toggle_dark_mode", "toggle_dnd":
+        return await AppearanceTools.handle(name: name, arguments: arguments)
+    case "get_wifi_info":
+        return await NetworkTools.handle(name: name, arguments: arguments)
+    case "get_battery_status":
+        return await PowerTools.handle(name: name, arguments: arguments)
+    case "get_storage_summary":
+        return await StorageTools.handle(name: name, arguments: arguments)
     default:
         return .init(
             content: [.text(text: "Unknown tool: \(name)", annotations: nil, _meta: nil)],

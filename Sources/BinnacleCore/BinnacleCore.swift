@@ -14,6 +14,14 @@ public enum Binnacle {
         + SystemInfoToolDefs.allTools
         + NotificationToolDefs.allTools
         + ClipboardToolDefs.allTools
+        + SpotlightToolDefs.allTools
+        + FinderToolDefs.allTools
+        + AppToolDefs.allTools
+        + DisplayToolDefs.allTools
+        + AppearanceToolDefs.allTools
+        + NetworkToolDefs.allTools
+        + PowerToolDefs.allTools
+        + StorageToolDefs.allTools
 
     /// Expected tool names in registration order
     public static let toolNames: [String] = tools.map(\.name)
@@ -358,5 +366,241 @@ public enum ClipboardToolDefs {
 
     public static var allTools: [Tool] {
         [read, write]
+    }
+}
+
+// MARK: - Spotlight Tool Definitions
+
+public enum SpotlightToolDefs {
+
+    public static let search = Tool(
+        name: "spotlight_search",
+        description: "Search files using Spotlight by name, content, kind, or date modified",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([
+                "query": .object(["type": "string", "description": "Search query text"]),
+                "kind": .object(["type": "string", "description": "File kind filter: document, image, audio, video, pdf, folder, application, email, presentation, spreadsheet (optional)"]),
+                "directory": .object(["type": "string", "description": "Limit search to this directory path (optional)"]),
+                "limit": .object(["type": "integer", "description": "Maximum results to return (default: 20, max: 100)"])
+            ]),
+            "required": .array(["query"])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static var allTools: [Tool] {
+        [search]
+    }
+}
+
+// MARK: - Finder Tool Definitions
+
+public enum FinderToolDefs {
+
+    public static let tags = Tool(
+        name: "finder_tags",
+        description: "List, get, or set Finder tags on files. Use action: list (all tags on a file), set (replace tags), or add (append tag)",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([
+                "path": .object(["type": "string", "description": "File or directory path"]),
+                "action": .object(["type": "string", "description": "Action: list, set, or add"]),
+                "tags": .object(["type": "array", "items": .object(["type": "string"]), "description": "Tags to set or add (required for set/add actions)"])
+            ]),
+            "required": .array(["path", "action"])
+        ]),
+        annotations: .init(
+            readOnlyHint: false,
+            destructiveHint: false,
+            idempotentHint: false,
+            openWorldHint: false
+        )
+    )
+
+    public static let info = Tool(
+        name: "finder_info",
+        description: "Get extended file info: size, dates, type, Finder comments, and Spotlight metadata",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([
+                "path": .object(["type": "string", "description": "File or directory path"])
+            ]),
+            "required": .array(["path"])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static let getDownloads = Tool(
+        name: "get_downloads",
+        description: "List recent files in ~/Downloads with name, size, and date",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([
+                "limit": .object(["type": "integer", "description": "Maximum files to return (default: 20)"]),
+                "sort_by": .object(["type": "string", "description": "Sort by: date (default), size, or name"])
+            ])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static var allTools: [Tool] {
+        [tags, info, getDownloads]
+    }
+}
+
+// MARK: - App Tool Definitions
+
+public enum AppToolDefs {
+
+    public static let openApp = Tool(
+        name: "open_app",
+        description: "Launch or activate a macOS application by name",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([
+                "name": .object(["type": "string", "description": "Application name (e.g. Safari, Finder, Terminal)"])
+            ]),
+            "required": .array(["name"])
+        ]),
+        annotations: .init(
+            readOnlyHint: false,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: true
+        )
+    )
+
+    public static let getRunningApps = Tool(
+        name: "get_running_apps",
+        description: "List currently running applications with process IDs",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([:])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static var allTools: [Tool] {
+        [openApp, getRunningApps]
+    }
+}
+
+// MARK: - Display Tool Definitions
+
+public enum DisplayToolDefs {
+
+    public static let getSettings = Tool(
+        name: "get_display_settings",
+        description: "Get current display configuration: resolution, scaling factor, color profile, and arrangement for all connected displays",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([:])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static var allTools: [Tool] {
+        [getSettings]
+    }
+}
+
+// MARK: - Appearance Tool Definitions
+
+public enum AppearanceToolDefs {
+
+    public static let toggleDarkMode = Tool(
+        name: "toggle_dark_mode",
+        description: "Toggle between light and dark appearance, or set a specific mode",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([
+                "mode": .object(["type": "string", "description": "Set specific mode: dark, light, or toggle (default: toggle)"])
+            ])
+        ]),
+        annotations: .init(
+            readOnlyHint: false,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false
+        )
+    )
+
+    public static let toggleDnd = Tool(
+        name: "toggle_dnd",
+        description: "Toggle Do Not Disturb (Focus) mode on or off",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([
+                "enabled": .object(["type": "boolean", "description": "Set DND on (true) or off (false). Omit to toggle."])
+            ])
+        ]),
+        annotations: .init(
+            readOnlyHint: false,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false
+        )
+    )
+
+    public static var allTools: [Tool] {
+        [toggleDarkMode, toggleDnd]
+    }
+}
+
+// MARK: - Network Tool Definitions
+
+public enum NetworkToolDefs {
+
+    public static let getWifiInfo = Tool(
+        name: "get_wifi_info",
+        description: "Get current WiFi network name, signal strength (RSSI), IP address, and interface details",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([:])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static var allTools: [Tool] {
+        [getWifiInfo]
+    }
+}
+
+// MARK: - Power Tool Definitions
+
+public enum PowerToolDefs {
+
+    public static let getBatteryStatus = Tool(
+        name: "get_battery_status",
+        description: "Get battery level, charging state, power source, cycle count, and health",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([:])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static var allTools: [Tool] {
+        [getBatteryStatus]
+    }
+}
+
+// MARK: - Storage Tool Definitions
+
+public enum StorageToolDefs {
+
+    public static let getSummary = Tool(
+        name: "get_storage_summary",
+        description: "Get disk usage breakdown: total, used, free space, and per-volume details",
+        inputSchema: .object([
+            "type": "object",
+            "properties": .object([:])
+        ]),
+        annotations: .init(readOnlyHint: true, openWorldHint: false)
+    )
+
+    public static var allTools: [Tool] {
+        [getSummary]
     }
 }
