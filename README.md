@@ -6,18 +6,39 @@ Built with Swift 6 and the [MCP Swift SDK](https://github.com/modelcontextprotoc
 
 ## Install
 
+Purchase from the Seaynic Labs Store, then download from your account:
+
 ```bash
-brew tap seayniclabs/tap
-brew install binnacle
+open https://store.seayniclabs.com/products/binnacle
+# after purchase
+open https://store.seayniclabs.com/account/downloads
 ```
 
-Or build from source:
+For local development, build from source:
 
 ```bash
 git clone https://github.com/seayniclabs/binnacle.git
 cd binnacle
 swift build -c release
 ```
+
+## Release (Signed + Notarized)
+
+Use the release script to build, sign, package, notarize, and verify:
+
+```bash
+export BINNACLE_VERSION=v0.2.0
+export APP_SIGN_IDENTITY="Developer ID Application: <Team Name> (<TEAM_ID>)"
+export PKG_SIGN_IDENTITY="Developer ID Installer: <Team Name> (<TEAM_ID>)"
+export NOTARY_PROFILE="<notarytool-keychain-profile>"
+
+./scripts/release-notarize.sh
+```
+
+This produces:
+
+- `dist/binnacle-vX.Y.Z-arm64.pkg` (+ `.sha256`)
+- `dist/binnacle-vX.Y.Z-arm64-macos.tar.gz` (+ `.sha256`)
 
 ## Setup
 
