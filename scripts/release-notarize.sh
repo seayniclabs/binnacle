@@ -10,12 +10,18 @@ set -euo pipefail
 #
 # Required env vars:
 #   BINNACLE_VERSION      e.g. v0.2.0
-#   APP_SIGN_IDENTITY     e.g. Developer ID Application: Seaynic Labs LLC (TEAMID)
-#   PKG_SIGN_IDENTITY     e.g. Developer ID Installer: Seaynic Labs LLC (TEAMID)
+#   APP_SIGN_IDENTITY     e.g. "Developer ID Application: Charles Seay (7NSS5CJL9E)"
+#   PKG_SIGN_IDENTITY     e.g. "Developer ID Installer: Charles Seay (7NSS5CJL9E)"
 #   NOTARY_PROFILE        keychain profile created by `xcrun notarytool store-credentials`
 #
 # Optional:
-#   TEAM_ID               Apple Team ID (used only for release summary output)
+#   TEAM_ID               Apple Team ID (default: 7NSS5CJL9E)
+#
+# One-time setup (if NOTARY_PROFILE doesn't exist yet):
+#   xcrun notarytool store-credentials "binnacle-notary" \
+#     --apple-id "YOUR_APPLE_ID" \
+#     --team-id "7NSS5CJL9E" \
+#     --password "APP_SPECIFIC_PASSWORD"
 
 if [[ -z "${BINNACLE_VERSION:-}" || -z "${APP_SIGN_IDENTITY:-}" || -z "${PKG_SIGN_IDENTITY:-}" || -z "${NOTARY_PROFILE:-}" ]]; then
   echo "Missing required environment variables."
@@ -26,19 +32,24 @@ fi
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="${ROOT_DIR}/dist"
 PKG_ROOT="${DIST_DIR}/pkgroot"
-UNSIGNED_BIN="${DIST_DIR}/Binnacle"
+UNSIGNED_BIN="${DIST_DIR}/binnacle-unsigned"
 SIGNED_BIN="${DIST_DIR}/binnacle"
 PKG_PATH="${DIST_DIR}/binnacle-${BINNACLE_VERSION}-arm64.pkg"
 TARBALL_PATH="${DIST_DIR}/binnacle-${BINNACLE_VERSION}-arm64-macos.tar.gz"
 
+mkdir -p "${DIST_DIR}"
+
 echo "==> Building release binary"
 swift build -c release --package-path "${ROOT_DIR}"
-cp "${ROOT_DIR}/.build/arm64-apple-macosx/release/Binnacle" "${UNSIGNED_BIN}"
+cp -f "${ROOT_DIR}/.build/arm64-apple-macosx/release/Binnacle" "${UNSIGNED_BIN}"
 chmod 755 "${UNSIGNED_BIN}"
 
 echo "==> Signing binary (${APP_SIGN_IDENTITY})"
 cp "${UNSIGNED_BIN}" "${SIGNED_BIN}"
-codesign --force --timestamp --options runtime --sign "${APP_SIGN_IDENTITY}" "${SIGNED_BIN}"
+ENTITLEMENTS="${ROOT_DIR}/Sources/Binnacle/Binnacle.entitlements"
+codesign --force --timestamp --options runtime \
+  --entitlements "${ENTITLEMENTS}" \
+  --sign "${APP_SIGN_IDENTITY}" "${SIGNED_BIN}"
 codesign --verify --deep --strict --verbose=2 "${SIGNED_BIN}"
 
 echo "==> Preparing pkg root"
