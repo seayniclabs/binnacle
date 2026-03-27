@@ -48,7 +48,7 @@ struct ToolRegistrationTests {
     @Test("Server metadata is correct")
     func serverMetadata() {
         #expect(Binnacle.serverName == "binnacle")
-        #expect(Binnacle.serverVersion == "0.1.0")
+        #expect(Binnacle.serverVersion == "0.2.0")
     }
 }
 

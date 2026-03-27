@@ -3,7 +3,7 @@ import MCP
 /// Binnacle server metadata and tool registry
 public enum Binnacle {
     public static let serverName = "binnacle"
-    public static let serverVersion = "0.1.0"
+    public static let serverVersion = "0.2.0"
 
     /// All tool definitions for the Binnacle MCP server.
     /// Separated from the executable so they can be tested independently.

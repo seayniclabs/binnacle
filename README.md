@@ -33,7 +33,7 @@ Then add to Claude Code:
 claude mcp add binnacle -- binnacle serve
 ```
 
-## Tools (19)
+## Tools (31)
 
 ### Calendar (6)
 
@@ -83,6 +83,58 @@ claude mcp add binnacle -- binnacle serve
 | `clipboard_read` | Read text from the macOS clipboard |
 | `clipboard_write` | Write text to the macOS clipboard |
 
+### Spotlight (1)
+
+| Tool | Description |
+|------|-------------|
+| `spotlight_search` | Search files by name, content, kind, and date |
+
+### Finder (3)
+
+| Tool | Description |
+|------|-------------|
+| `finder_tags` | List/get/set Finder tags on files |
+| `finder_info` | Extended file info (Spotlight metadata, Finder comments) |
+| `get_downloads` | List recent downloads with size/date |
+
+### Apps (2)
+
+| Tool | Description |
+|------|-------------|
+| `open_app` | Launch or activate an app by name |
+| `get_running_apps` | List running applications |
+
+### Display (1)
+
+| Tool | Description |
+|------|-------------|
+| `get_display_settings` | Current display configuration and arrangement |
+
+### Appearance (2)
+
+| Tool | Description |
+|------|-------------|
+| `toggle_dark_mode` | Toggle light/dark appearance |
+| `toggle_dnd` | Toggle Do Not Disturb / Focus mode |
+
+### Network (1)
+
+| Tool | Description |
+|------|-------------|
+| `get_wifi_info` | Current WiFi network, signal, and IP details |
+
+### Power (1)
+
+| Tool | Description |
+|------|-------------|
+| `get_battery_status` | Battery level, charging state, and health details |
+
+### Storage (1)
+
+| Tool | Description |
+|------|-------------|
+| `get_storage_summary` | Disk usage breakdown by volume/category |
+
 ### Utility (1)
 
 | Tool | Description |
@@ -97,4 +149,4 @@ claude mcp add binnacle -- binnacle serve
 
 ## License
 
-MIT
+Proprietary commercial software by Seaynic Labs.
