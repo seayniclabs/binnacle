@@ -1,3 +1,12 @@
+## [v0.3.1] - 2026-04-01
+
+### Fixed
+- Crash (SIGSEGV) when launched as a subprocess with stdout connected to a pipe (e.g., via mcp-proxy). Root cause: Swift lazy global initialization is unsafe on macOS 26 / Swift 6.2.4 when the process stdout file descriptor is a non-TTY pipe. Removed the module-level `allTools` global entirely; tools are now built as a local variable inside `startServer()`, bypassing the Swift runtime's `swift_once` lazy init path.
+
+### Changed
+- Bumped server version from `0.2.0` to `0.3.1`.
+- Added `@_optimize(none)` to `startServer()` as secondary protection against optimizer-driven lazy init reordering.
+
 ## [v0.2.0] - 2026-03-27
 
 ### Added
