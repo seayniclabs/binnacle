@@ -85,8 +85,7 @@ func runSetup() async {
 
 // MARK: - Tool Registry
 
-/// All tools registered in the server
-let allTools: [Tool] = [PingHandler.tool] + CalendarTools.allTools + ReminderTools.allTools + ShortcutTools.allTools + SystemInfoTools.allTools + NotificationTools.allTools + ClipboardTools.allTools + SpotlightTools.allTools + FinderTools.allTools + AppTools.allTools + DisplayTools.allTools + AppearanceTools.allTools + NetworkTools.allTools + PowerTools.allTools + StorageTools.allTools
+/// Route a tool call to the appropriate handler
 
 /// Route a tool call to the appropriate handler
 func handleToolCall(name: String, arguments: [String: Value]?) async -> CallTool.Result {
@@ -133,6 +132,7 @@ func handleToolCall(name: String, arguments: [String: Value]?) async -> CallTool
 
 // MARK: - MCP Server
 
+@_optimize(none)
 func startServer() async throws {
     let server = Server(
         name: Binnacle.serverName,
@@ -140,9 +140,19 @@ func startServer() async throws {
         capabilities: .init(tools: .init(listChanged: false))
     )
 
+    // Build the tool list as a local — avoids Swift's lazy global init which races
+    // with async actor hops when stdout is a pipe (proxy subprocess invocation).
+    var tools: [Tool] = [PingHandler.tool]
+    tools += CalendarTools.allTools + ReminderTools.allTools + ShortcutTools.allTools
+    tools += SystemInfoTools.allTools + NotificationTools.allTools + ClipboardTools.allTools
+    tools += SpotlightTools.allTools + FinderTools.allTools + AppTools.allTools
+    tools += DisplayTools.allTools + AppearanceTools.allTools + NetworkTools.allTools
+    tools += PowerTools.allTools + StorageTools.allTools
+    let registeredTools = tools  // immutable copy for @Sendable capture
+
     // Register tools/list handler
     await server.withMethodHandler(ListTools.self) { _ in
-        .init(tools: allTools)
+        .init(tools: registeredTools)
     }
 
     // Register tools/call handler
@@ -154,7 +164,7 @@ func startServer() async throws {
     let transport = StdioTransport()
     try await server.start(transport: transport)
 
-    log("server running with \(allTools.count) tools")
+    log("server running with \(tools.count) tools")
 
     await server.waitUntilCompleted()
 }
