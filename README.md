@@ -1,17 +1,18 @@
 # Binnacle
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 macOS system control MCP server. Gives AI tools native access to Calendar, Reminders, Shortcuts, system info, notifications, and clipboard — all through the [Model Context Protocol](https://modelcontextprotocol.io).
 
 Built with Swift 6 and the [MCP Swift SDK](https://github.com/modelcontextprotocol/swift-sdk). Requires macOS 14+.
 
 ## Install
 
-Purchase from the Seaynic Labs Store, then download from your account:
+Download the signed `.pkg` from [GitHub Releases](https://github.com/seayniclabs/binnacle/releases/latest), then install:
 
 ```bash
-open https://store.seayniclabs.com/products/binnacle
-# after purchase
-open https://store.seayniclabs.com/account/downloads
+# Replace VERSION with the latest release tag (e.g. v0.2.0)
+open "https://github.com/seayniclabs/binnacle/releases/latest"
 ```
 
 For local development, build from source:
@@ -170,4 +171,4 @@ claude mcp add binnacle -- binnacle serve
 
 ## License
 
-Proprietary commercial software by Seaynic Labs.
+MIT — see [LICENSE](LICENSE).
