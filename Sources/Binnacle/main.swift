@@ -11,6 +11,47 @@ func log(_ msg: String) {
     FileHandle.standardError.write(Data("[binnacle] \(msg)\n".utf8))
 }
 
+private let calendarDeniedToolMessage =
+    "Calendar access denied. Grant access in System Settings → Privacy & Security → Calendars, then restart Binnacle."
+private let remindersDeniedToolMessage =
+    "Reminders access denied. Grant access in System Settings → Privacy & Security → Reminders, then restart Binnacle."
+
+func warnTCCStatusIfNeeded() {
+    let calStatus = EKEventStore.authorizationStatus(for: .event)
+    if calStatus == .denied || calStatus == .restricted {
+        fputs(
+            "[Binnacle] Calendar access denied. To fix: System Settings → Privacy & Security → Calendars → enable Binnacle.\n",
+            stderr
+        )
+    }
+    let reminderStatus = EKEventStore.authorizationStatus(for: .reminder)
+    if reminderStatus == .denied || reminderStatus == .restricted {
+        fputs(
+            "[Binnacle] Reminders access denied. To fix: System Settings → Privacy & Security → Reminders → enable Binnacle.\n",
+            stderr
+        )
+    }
+}
+
+func calendarAccessDeniedResult() -> CallTool.Result? {
+    let status = EKEventStore.authorizationStatus(for: .event)
+    guard status == .denied || status == .restricted else { return nil }
+    return tccErrorResult(calendarDeniedToolMessage)
+}
+
+func remindersAccessDeniedResult() -> CallTool.Result? {
+    let status = EKEventStore.authorizationStatus(for: .reminder)
+    guard status == .denied || status == .restricted else { return nil }
+    return tccErrorResult(remindersDeniedToolMessage)
+}
+
+func tccErrorResult(_ message: String) -> CallTool.Result {
+    .init(
+        content: [.text(text: message, annotations: nil, _meta: nil)],
+        isError: true
+    )
+}
+
 if args.contains("setup") {
     await runSetup()
 } else {
@@ -93,8 +134,10 @@ func handleToolCall(name: String, arguments: [String: Value]?) async -> CallTool
     case "ping":
         return await PingHandler.handle(arguments: arguments)
     case let n where n.hasPrefix("calendar_"):
+        if let denied = calendarAccessDeniedResult() { return denied }
         return await CalendarTools.handle(name: n, arguments: arguments)
     case let n where n.hasPrefix("reminders_"):
+        if let denied = remindersAccessDeniedResult() { return denied }
         return await ReminderTools.handle(name: n, arguments: arguments)
     case let n where n.hasPrefix("shortcuts_"):
         return await ShortcutTools.handle(name: n, arguments: arguments)
@@ -134,6 +177,8 @@ func handleToolCall(name: String, arguments: [String: Value]?) async -> CallTool
 
 @_optimize(none)
 func startServer() async throws {
+    warnTCCStatusIfNeeded()
+
     let server = Server(
         name: Binnacle.serverName,
         version: Binnacle.serverVersion,
